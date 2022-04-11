@@ -1,0 +1,16 @@
+---
+
+- name: Add user
+  hosts: SDP
+  gather_facts: false
+  become: yes
+  vars:
+      username: testuser1
+      shell: /bin/bash
+      home: /home/testuser1
+  tasks:
+    - name: create user
+      user:
+          name: "{{username}}"
+          shell: "{{shell}}"
+          home: "{{home}}"

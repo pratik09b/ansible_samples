@@ -1,0 +1,27 @@
+1. Write an ansible script ,that will
+	a. Copy the script collect_info.sh to all the hosts.
+	b. Run the shell script ( collect_info.sh ) , against the hosts mentioned in host file.
+	c. Script will be run as root user.
+	d. The output file of the script ( will be like collect*txt) need to be copied to local host.
+
+– hosts: all
+  strategy: free
+  user: bvunix
+  become: yes
+  become_method: sudo
+  become_user: root
+  tasks:
+    – name: Copy script collect_audit.sh
+      copy: src=collect_audit.sh dest=/home/bvunix mode=0777
+    – name: Run script for audit
+      command: sh /home/bvunix/collect_audit.sh
+    – name: find the output file
+      shell: (cd /home/bvunix; find collect*.txt)
+      register: files_to_copy
+    – debug:
+        var: files_to_copy
+    – name: Fetch the file from remote to local
+      fetch: src=/home/bvunix/{{ item }} dest=/home/bvunix/ mode=0777 flat=yes
+      with_items: “{{ files_to_copy.stdout_lines }}”
+
+*************************************************************************************************************************************

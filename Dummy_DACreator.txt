@@ -1,0 +1,22 @@
+---
+- name: Run dummy DA Creator script in remote servers
+  hosts:
+      SDP
+      AIR
+  become: yes
+  gather_facts: false
+  tasks:
+      - name: Run script
+        shell:
+              "./DACreator.sh"
+        args:
+            chdir: "/tmp/CS_Script"
+        register: script_out
+      - name: Get Logs Output
+        fetch:
+            src: "/tmp/CS_Script/Logs/Logs.txt"
+            dest: "Output_Logs/{{inventory_hostname}}.txt"
+            flat: yes
+      - name: Display Script Output Msg
+        debug:
+            msg: "{{script_out.stdout}}"
